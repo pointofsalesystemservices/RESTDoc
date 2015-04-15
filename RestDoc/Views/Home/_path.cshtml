@@ -1,0 +1,12 @@
+﻿<tr data-bind="visible: $parent === $root.selectedApi() && !$parent.selectedPathGroup() && !parent.editMode() && !$root.editMode()">
+    
+</tr>
+
+<!-- ko foreach: pathGroups -->
+<tr data-bind="visible: $parent === $root.selectedApi() && $data === $parent.selectedPathGroup() && !$parent.editMode()">
+    
+</tr>
+<tr data-bind="visible: $parent === $root.selectedApi() && $data === $parent.selectedPathGroup() && $parent.editMode()">
+    
+</tr>
+<!-- /ko -->

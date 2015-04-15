@@ -1,0 +1,131 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <button class="btn btn-info" data-bind="click: refresh">Refresh</button>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-condensed table-hover table-striped" id="main">
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Description</td>
+                    <td>Creator</td>
+                    <td>Created</td>
+                    <td>Last Modified</td>
+                    <td>Path groups</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: restApis">
+                <tr data-bind="click: $parent.onRowClick">
+                    <td data-bind="text: name"></td>
+                    <td data-bind="text: description"></td>
+                    <td data-bind="text: creator"></td>
+                    <td data-bind="text: created.fromNow()"></td>
+                    <td data-bind="text: lastModified.fromNow()"></td>
+                    <td data-bind="text: pathGroups().length"></td>
+                    <td>
+                        <button class="btn btn-default" data-bind="click: $root.edit, visible: !$root.editMode()">Edit</button>
+                        <button class="btn btn-default" data-bind="click: $root.cancelEdit, visible: $root.selectedApi() === $data && $root.editMode">Cancel edit</button>
+                        <button class="btn btn-danger" data-bind="click: $root.delete, visible: !$root.editMode()">Delete</button>
+                    </td>
+                </tr>
+                <tr data-bind="visible: $root.selectedApi() === $data && !$root.editMode()">
+                    <td data-bind=" attr: { colspan: $root.tableColumnCount() }">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">Name</div>
+                                <div class="col-md-2" data-bind="text: name"></div>
+                                <div class="col-md-4">Description</div>
+                                <div class="col-md-4" data-bind="text: description"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">Api URL</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" data-bind="text: url"></div>
+                            </div>
+                            <div class="row">
+                                <table class="table table-condensed table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <td>Description</td>
+                                        <td>Base Path</td>
+                                        <td>Paths</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: pathGroups">
+                                    <tr>
+                                        <td data-bind="text: description">
+                                        </td>
+                                        <td data-bind="text: $data.basePath ? $data.basePath() : 'unknown'"></td>
+                                        <td data-bind="text: $data.apiPaths ? $data.apiPaths().length : 0"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-bind="visible: $root.selectedApi() === $data && $root.editMode()">
+                    <td data-bind=" attr: { colspan: $root.tableColumnCount() }">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-4">Name</div>
+                                <div class="col-md-8">
+                                    <input type="text" data-bind="value: name" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Description</div>
+                                <div class="col-md-8">
+                                    <input type="text" data-bind="value: description" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">Version</div>
+                                <div class="col-md-8">
+                                    <input type="text" data-bind="value: version" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-info" data-bind="click: $root.save">Save</button>
+                                    <button class="btn btn-default" data-bind="click: $root.cancelEdit, visible: $root.selectedApi() === $data && $root.editMode">Cancel edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td data-bind="text: restApis().length, attr: { colspan: $root.tableColumnCount() } "></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/site")
+
+    <script language="javascript">
+        $(function () {
+            rootBuildingBlock.prefix = "@(new Uri(Request.Url, Url.Content("~/")).AbsoluteUri)";
+            var viewModel = new PageViewModel();
+            viewModel.tableColumnCount($("#main")[0].rows[0].cells.length);
+            ko.applyBindings(viewModel);
+        });
+    </script>
+}

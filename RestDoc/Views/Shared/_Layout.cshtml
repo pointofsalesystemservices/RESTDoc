@@ -1,0 +1,75 @@
+﻿@using System.Security.Principal
+@using System.DirectoryServices.AccountManagement
+@using System.Text
+
+@{
+    var displayName = null as string;
+    var emailAddress = null as string;
+    if (User.Identity.IsAuthenticated)
+    {
+        try
+        {
+            displayName = UserPrincipal.Current.DisplayName;
+            emailAddress = UserPrincipal.Current.EmailAddress;
+        }
+        catch
+        {
+            displayName = null;
+            emailAddress = null;
+        }
+    }
+
+    displayName = displayName ?? (User.Identity.IsAuthenticated ? User.Identity.Name : "Guest");
+
+
+    var userGreeting = new StringBuilder(User.Identity.IsAuthenticated ? "Logged in as " : "Not logged in");
+    if (User.Identity.IsAuthenticated)
+    {
+        userGreeting.Append(displayName);
+        if (!string.IsNullOrWhiteSpace(emailAddress))
+        {
+            userGreeting.AppendFormat(" - {0}", emailAddress);
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - REST Doc</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("REST Doc", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                </ul>
+                <p class="nav navbar-text navbar-right">@(userGreeting.ToString())</p>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - pss Inc.</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
